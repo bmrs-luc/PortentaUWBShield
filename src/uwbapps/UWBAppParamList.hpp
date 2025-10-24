@@ -3,7 +3,7 @@
 
 #include "UWBAppParamsList.hpp"
 #include "UWBMacAddress.hpp"
-
+#include "UWBMacAddressList.hpp"
 
 #ifndef __UWBAPPPARAMLIST_HPP__
 #define __UWBAPPPARAMLIST_HPP__
@@ -385,12 +385,21 @@ public:
      */
     bool noOfControlees(uint8_t number);
     
+    
     /**
      * @brief Set the Destination Mac Address for the session
      * 
      * @param addr 
      */
     bool destinationMacAddr(UWBMacAddress &addr);
+    
+        /**
+     * @brief Set the Destination Mac Addresses for multicast session
+     *
+     * @param addrs List of destination MAC addresses
+     */
+    bool destinationMacAddr(UWBMacAddressList addrs);
+
 
      // WHAT BELOW NEEDS SOME CLARIFICATION
      //        /**

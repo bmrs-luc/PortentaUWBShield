@@ -63,6 +63,15 @@ uwb::Status UWBSession::init()
         UWBHAL.Log_E("could not init session");
         return res;
     }
+    // Set ranging (core) params first to ensure device mode/addressing is configured
+    res=UWBHAL.setRangingParams(sessionHdl, rangingParams);
+    if (res != uwb::Status::SUCCESS)
+    {
+        UWBHAL.Log_E("could not set ranging params");
+        return res;
+    }
+
+    // Then set application parameters
     if (appParams.getSize())
     {
         res=UWBHAL.setAppConfigMultiple(sessionHdl, appParams);
@@ -74,12 +83,6 @@ uwb::Status UWBSession::init()
     }
     else
         UWBHAL.Log_E("no app params");
-    res=UWBHAL.setRangingParams(sessionHdl, rangingParams);
-    if (res != uwb::Status::SUCCESS)
-    {
-        UWBHAL.Log_E("could not set ranging params");
-        return res;
-    }
 
     if(vendorParams.getSize())
     {

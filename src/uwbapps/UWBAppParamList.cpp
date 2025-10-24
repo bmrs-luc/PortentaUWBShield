@@ -123,3 +123,8 @@ bool UWBAppParamList::destinationMacAddr(UWBMacAddress &addr)
     return addOrUpdateParam(buildArray(uwb::AppConfigId::PeerAddress, addr.getData(), addr.getSize()));
 }
 
+
+bool UWBAppParamList::destinationMacAddr(UWBMacAddressList addrs)
+{
+    return addOrUpdateParam(buildArray(uwb::AppConfigId::PeerAddress, addrs.getAllData(), addrs.size() * (uint8_t)addrs.macTypeSize()));
+}
