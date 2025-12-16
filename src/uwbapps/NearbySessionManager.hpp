@@ -97,7 +97,7 @@ public:
 
     
 
-private:
+public:
     
     NearbySessionManager(NearbySessionManager const &) = delete;
     void operator=(NearbySessionManager const &) = delete;
