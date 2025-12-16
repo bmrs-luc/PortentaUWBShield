@@ -11,7 +11,7 @@ NearbySessionManager::NearbySessionManager() {
 void NearbySessionManager::blePeripheralConnectHandler(BLEDevice central)
 {
     // central connected event handler
-
+    Serial.println("In blePeripheralConnectHandler");
     NearbySession newSession(central);
     NearbySessionManager::instance().addSession(newSession);
     if (NearbySessionManager::instance().clientConnectionHandler)
@@ -41,6 +41,7 @@ void NearbySessionManager::onSessionStart(BLEDeviceEventHandler sessionStartHand
 
 void NearbySessionManager::blePeripheralDisconnectHandler(BLEDevice central)
 {
+    Serial.println("In blePeripheralDisconnectHandler");
     // central disconnected event handler
 
     //NearbySessionManager::instance().handleStopSession(central);
@@ -317,6 +318,9 @@ NearbySession &NearbySessionManager::find(BLEDevice dev)
 
 bool NearbySessionManager::addSession(NearbySession &sess)
 {
+    Serial.println("In addSession");
+    Serial.println("NumSessions" + numSessions);
+    Serial.println("MaxSessions" + numSessions);
     NearbySession *newSess = new NearbySession();
     newSess->sessionID(sess.sessionID());
     newSess->sessionType(sess.sessionType());

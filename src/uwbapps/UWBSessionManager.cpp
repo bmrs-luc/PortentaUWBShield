@@ -8,6 +8,8 @@ UWBSessionManager_::UWBSessionManager_() {}
 
 bool UWBSessionManager_::deleteSession(uint32_t sessionID)
 {
+    Serial.println("In deleteSession");
+    Serial.println("Numsessions: " + numSessions);
     for (int i = 0; i < numSessions; ++i)
     {
         if (sessions[i]->sessionID() == sessionID)
@@ -26,6 +28,7 @@ bool UWBSessionManager_::deleteSession(uint32_t sessionID)
 }
 bool UWBSessionManager_::addSession(UWBSession& sess)
 {
+    Serial.println("In addSession from UWBSessionManager");
     UWBSession *newSess= new UWBSession();
     newSess->sessionID(sess.sessionID());
     newSess->sessionType(sess.sessionType());
