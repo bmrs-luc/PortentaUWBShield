@@ -319,8 +319,10 @@ NearbySession &NearbySessionManager::find(BLEDevice dev)
 bool NearbySessionManager::addSession(NearbySession &sess)
 {
     Serial.println("In addSession");
-    Serial.println("NumSessions" + numSessions);
+    Serial.println("NumSessions" );
+    Serial.println(numSessions);
     Serial.println("MaxSessions" + numSessions);
+    Serial.println(maxSessions);
     NearbySession *newSess = new NearbySession();
     newSess->sessionID(sess.sessionID());
     newSess->sessionType(sess.sessionType());

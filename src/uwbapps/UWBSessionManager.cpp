@@ -9,7 +9,8 @@ UWBSessionManager_::UWBSessionManager_() {}
 bool UWBSessionManager_::deleteSession(uint32_t sessionID)
 {
     Serial.println("In deleteSession");
-    Serial.println("Numsessions: " + numSessions);
+    Serial.println("Numsessions: " );
+    Serial.println(numSessions);
     for (int i = 0; i < numSessions; ++i)
     {
         if (sessions[i]->sessionID() == sessionID)
