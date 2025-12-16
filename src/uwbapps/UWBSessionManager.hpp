@@ -88,7 +88,7 @@ private:
     void operator=(UWBSessionManager_ const &) = delete;
 
 public:
-    static const int maxSessions = 5;
+    static const int maxSessions = 3;
     int numSessions;
     UWBSession* sessions[maxSessions];
     UWBSession emptySession;
