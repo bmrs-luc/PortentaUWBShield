@@ -22,6 +22,9 @@ bool UWBSessionManager_::deleteSession(uint32_t sessionID)
             }
             numSessions--;
             sessions[numSessions]=nullptr;
+            Serial.println("Session deleted successfully");
+            Serial.println("Numsessions: " );
+            Serial.println(numSessions);
             return true;
         }
     }
