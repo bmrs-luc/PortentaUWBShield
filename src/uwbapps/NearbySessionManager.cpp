@@ -321,15 +321,18 @@ bool NearbySessionManager::addSession(NearbySession &sess)
     Serial.println("In addSession");
     Serial.println("NumSessions" );
     Serial.println(numSessions);
-    Serial.println("MaxSessions" + numSessions);
+    Serial.println("MaxSessions");
     Serial.println(maxSessions);
     NearbySession *newSess = new NearbySession();
     newSess->sessionID(sess.sessionID());
     newSess->sessionType(sess.sessionType());
     newSess->bleDevice(sess.bleDevice());
 
-    if (numSessions >= maxSessions)
+    if (numSessions >= maxSessions) {
+        Serial.println("Session already exists");
         return false;
+    }
+
 
     sessions[numSessions++] = newSess; //&sess;
     return true;
