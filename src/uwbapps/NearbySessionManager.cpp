@@ -64,6 +64,7 @@ void NearbySessionManager::rxCharacteristicWritten(BLEDevice central, BLECharact
 
 bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
 {
+    Serial.println("In handleStopSession");
     bool status = true;
     uwb::Status operation = uwb::Status::SUCCESS;
     NearbySession &nearbySession = NearbySessionManager::instance().find(bleDev);
@@ -73,7 +74,8 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
     {
         switch (nearbySession.sessionState())
         {
-        case notStarted:
+            case notStarted:
+                Serial.println("In notStarted");
             UWBHAL.Log_D("Deleting session: %04X", nearbySession.sessionHandle());
             nearbySession.stop();
             operation = nearbySession.deInit();
@@ -90,6 +92,7 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
             //delay(2000);
             break;
         case Started:
+                Serial.println("In Started");
             UWBHAL.Log_D("Stopping session: %04X", nearbySession.sessionHandle());
             operation = nearbySession.stop();
             UWBHAL.Log_D("Stopped session with status: %04X", operation);
@@ -119,6 +122,7 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
 
 void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
 {
+    Serial.println("In handleTLV");
     uwb::Status uwb_status = uwb::Status::FAILED;
 
     uint8_t response;
@@ -135,6 +139,7 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
     {
     case kMsg_ConfigureAndStart:
     {
+        Serial.println("In ConfigureAndStart");
         nearbySession.sessionState(notStarted);
         if (nearbySession.deviceType() == Android)
         {
@@ -185,6 +190,7 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
         /* Start command received
          * Fill the ConfigData and send it over BLE to the phone application
          */
+        Serial.println("In Initialize_iOS");
 
         if (nearbySession.configIOS() == uwb::Status::SUCCESS)
         {
@@ -236,6 +242,7 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
         /* Stop command received
          * Stop UWB and send back the response to the phone
          */
+            Serial.println("In Stop");
         UWBHAL.Log_I("Received stop message");
         if (!NearbySessionManager::instance().handleStopSession(bleDev))
         {
