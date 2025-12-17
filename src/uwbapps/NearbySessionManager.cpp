@@ -143,6 +143,7 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
         nearbySession.sessionState(notStarted);
         if (nearbySession.deviceType() == Android)
         {
+			Serial.println("In Android");
             if (nearbySession.startAndroid(data) == uwb::Status::SUCCESS)
             {
                 response = kRsp_UwbDidStart;
@@ -159,21 +160,26 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
         }
         else if (nearbySession.deviceType() == iOS)
         {
+			Serial.println("In iOS");
             /* Fill-in input structure with device role/type and device mac address*/
             UWBHAL.Log_Array_D("shareable data", data,30);
 
             if (nearbySession.startIOS(data) == uwb::Status::SUCCESS)
             {
+				Serial.println("In Success");
                 response = kRsp_UwbDidStart;
                 txCharacteristic.writeValue(&response, sizeof(response));
                 if (nearbySession.shouldUpdateAccessory())
                 {
+					Serial.println("In ShouldUpdateAccessory");
                     const uint8_t tmpData[50] = {0};
                     accessoryConfigDataChar.writeValue(tmpData, 50);//neds to be fixed
                 }
+				Serial.println("End of IOS");
             }
             else
             {
+				Serial.println("In Not-Success");
                 UWBHAL.Log_E("Could not start IOS Nearby Session");
             }
         }
