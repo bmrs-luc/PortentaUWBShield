@@ -56,7 +56,7 @@ public:
      * @param bleDev 
      * @param data 
      */
-    void handleTLV(BLEDevice bleDev, uint8_t *data);
+    void handleTLV(BLEDevice bleDev, uint8_t *datalong);
 
     /**
      * @brief start the BLE manager
