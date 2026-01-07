@@ -58,8 +58,11 @@ void NearbySessionManager::blePeripheralDisconnectHandler(BLEDevice central)
 
 void NearbySessionManager::rxCharacteristicWritten(BLEDevice central, BLECharacteristic characteristic)
 {
-
-    NearbySessionManager::instance().handleTLV(central, (uint8_t *)characteristic.value());
+    NearbySessionManager::instance().handleTLV(
+        central,
+        (uint8_t *)characteristic.value(),
+        characteristic.valueLength()
+    );
 }
 
 bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
@@ -107,7 +110,7 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
                 status = false;
             }
             break;
-            
+
         default:
             UWBHAL.Log_E("Stop session wrong state: %d", nearbySession.sessionState());
             status = false;
@@ -120,12 +123,29 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
     return status;
 }
 
-void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
+void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong, size_t len)
 {
+
+    if (datalong == nullptr) {
+        UWBHAL.Log_W("handleTLV data is NULL");
+        return;
+    }
+
+    if (len < 16) {
+        UWBHAL.Log_E("handleTLV: payload too short (%d)", len);
+        return;
+    }
+
+    uint8_t identi[16];
+    memcpy(identi, datalong, 16);   // copy first 16 bytes = identifier
+    uint8_t* data = datalong + 16;   // remaining bytes
+    size_t payloadLen = len - 16;
+
     Serial.println("In handleTLV");
     uwb::Status uwb_status = uwb::Status::FAILED;
 
     uint8_t response;
+    uint8_t responseBuf[17]; // 16-byte identifier + 1-byte response code
 
     if (data == NULL)
     {
@@ -146,16 +166,18 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
 			Serial.println("In Android");
             if (nearbySession.startAndroid(data) == uwb::Status::SUCCESS)
             {
-                response = kRsp_UwbDidStart;
-                txCharacteristic.writeValue(&response, sizeof(response));
+                responseBuf[16] = kRsp_UwbDidStart;
+                memcpy(responseBuf, identi, 16);
+                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
             }
             else
             {
                 UWBHAL.Log_E("Could not start Android Nearby Session");
             }
             {
-                response = kRsp_UwbDidStart;
-                txCharacteristic.writeValue(&response, sizeof(response));
+                responseBuf[16] = kRsp_UwbDidStart;
+                memcpy(responseBuf, identi, 16);
+                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
             }
         }
         else if (nearbySession.deviceType() == iOS)
@@ -167,8 +189,9 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
             if (nearbySession.startIOS(data) == uwb::Status::SUCCESS)
             {
 				Serial.println("In Success");
-                response = kRsp_UwbDidStart;
-                txCharacteristic.writeValue(&response, sizeof(response));
+                responseBuf[16] = kRsp_UwbDidStart;
+                memcpy(responseBuf, identi, 16);
+                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
                 if (nearbySession.shouldUpdateAccessory())
                 {
 					Serial.println("In ShouldUpdateAccessory");
@@ -216,7 +239,7 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
                 accessoryConfigDataChar.writeValue(BLEmessage_iOS + 1, nearbySession.configLen() - 1);
 
                 /* Need to send the exact data over ble */
-                
+
                 txCharacteristic.writeValue(BLEmessage_iOS, nearbySession.configLen());
             }
             else
@@ -258,8 +281,9 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *data)
         {
             uwb_status = uwb::Status::SUCCESS;
         }
-        response = kRsp_UwbDidStop;
-        txCharacteristic.writeValue(&response, sizeof(response));
+        responseBuf[16] = kRsp_UwbDidStop;
+        memcpy(responseBuf, identi, 16);
+        txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
 
         break;
 
