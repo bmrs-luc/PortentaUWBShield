@@ -123,7 +123,7 @@ bool NearbySessionManager::handleStopSession(BLEDevice bleDev)
     return status;
 }
 
-void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong, size_t len)
+void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong)
 {
 
     if (datalong == nullptr) {
@@ -131,15 +131,12 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong, size_t
         return;
     }
 
-    if (len < 16) {
-        UWBHAL.Log_E("handleTLV: payload too short (%d)", len);
-        return;
-    }
+
 
     uint8_t identi[16];
     memcpy(identi, datalong, 16);   // copy first 16 bytes = identifier
     uint8_t* data = datalong + 16;   // remaining bytes
-    size_t payloadLen = len - 16;
+
 
     Serial.println("In handleTLV");
     uwb::Status uwb_status = uwb::Status::FAILED;
