@@ -60,8 +60,7 @@ void NearbySessionManager::rxCharacteristicWritten(BLEDevice central, BLECharact
 {
     NearbySessionManager::instance().handleTLV(
         central,
-        (uint8_t *)characteristic.value(),
-        characteristic.valueLength()
+        (uint8_t *)characteristic.value()
     );
 }
 
