@@ -134,13 +134,26 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong)
 
     uint8_t identi[16];
     memcpy(identi, datalong, 16);   // copy first 16 bytes = identifier
+    Serial.print("Identifier: ");
+for (int i = 0; i < 16; i++)
+{
+    if (identi[i] < 0x10) Serial.print("0");
+    Serial.print(identi[i], HEX);
+    Serial.print(" ");
+}
+Serial.println();
+
     uint8_t* data = datalong + 16;   // remaining bytes
+    Serial.print("DATA: ");
+if (data[0] < 0x10) Serial.print("0");
+Serial.println(data[0], HEX);
+
 
 
     Serial.println("In handleTLV");
     uwb::Status uwb_status = uwb::Status::FAILED;
 
-    uint8_t response;
+
     uint8_t responseBuf[17]; // 16-byte identifier + 1-byte response code
 
     if (data == NULL)
@@ -162,18 +175,23 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong)
 			Serial.println("In Android");
             if (nearbySession.startAndroid(data) == uwb::Status::SUCCESS)
             {
-                responseBuf[16] = kRsp_UwbDidStart;
                 memcpy(responseBuf, identi, 16);
-                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
+				responseBuf[16] = kRsp_UwbDidStart;
+
+				Serial.print("responseBuf: ");
+				for (int i = 0; i < 17; i++)
+				{
+    				if (responseBuf[i] < 0x10) Serial.print("0");
+    				Serial.print(responseBuf[i], HEX);
+    				Serial.print(" ");
+				}
+				Serial.println();
+
+                txCharacteristic.writeValue(responseBuf, 17);
             }
             else
             {
                 UWBHAL.Log_E("Could not start Android Nearby Session");
-            }
-            {
-                responseBuf[16] = kRsp_UwbDidStart;
-                memcpy(responseBuf, identi, 16);
-                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
             }
         }
         else if (nearbySession.deviceType() == iOS)
@@ -185,9 +203,19 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong)
             if (nearbySession.startIOS(data) == uwb::Status::SUCCESS)
             {
 				Serial.println("In Success");
-                responseBuf[16] = kRsp_UwbDidStart;
                 memcpy(responseBuf, identi, 16);
-                txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
+				responseBuf[16] = kRsp_UwbDidStart;
+
+				Serial.print("responseBuf: ");
+				for (int i = 0; i < 17; i++)
+				{
+    				if (responseBuf[i] < 0x10) Serial.print("0");
+    				Serial.print(responseBuf[i], HEX);
+    				Serial.print(" ");
+				}
+				Serial.println();
+
+                txCharacteristic.writeValue(responseBuf, 17);
                 if (nearbySession.shouldUpdateAccessory())
                 {
 					Serial.println("In ShouldUpdateAccessory");
@@ -277,18 +305,25 @@ void NearbySessionManager::handleTLV(BLEDevice bleDev, uint8_t *datalong)
         {
             uwb_status = uwb::Status::SUCCESS;
         }
-        responseBuf[16] = kRsp_UwbDidStop;
         memcpy(responseBuf, identi, 16);
-        txCharacteristic.writeValue(responseBuf, sizeof(responseBuf));
+		responseBuf[16] = kRsp_UwbDidStart;
 
+		Serial.print("responseBuf: ");
+		for (int i = 0; i < 17; i++)
+		{
+    		if (responseBuf[i] < 0x10) Serial.print("0");
+    		Serial.print(responseBuf[i], HEX);
+    		Serial.print(" ");
+		}
+		Serial.println();
+
+        txCharacteristic.writeValue(responseBuf, 17);
         break;
 
     default:
         UWBHAL.Log_W("Unknown command, skipping");
         break;
     }
-
-
 }
 void NearbySessionManager::begin(const char* deviceName)
 {
