@@ -154,7 +154,8 @@ Serial.println(data[0], HEX);
     uwb::Status uwb_status = uwb::Status::FAILED;
 
 
-    uint8_t responseBuf[17]; // 16-byte identifier + 1-byte response code
+	uint8_t responseBuf[17];
+	uint8_t responseBuff[54];
 
     if (data == NULL)
     {
@@ -255,6 +256,23 @@ Serial.println(data[0], HEX);
                 Serial.print(BLEmessage_iOS[jj], HEX);
             }
             Serial.print("\n");
+
+           		memcpy(responseBuff, identi, 16); // Kopiert die ersten 16 Bytes
+				memcpy(responseBuff + 16, BLEmessage_iOS, nearbySession.configLen());
+
+				size_t configLength = nearbySession.configLen();
+				Serial.print("BLE Config length: ");
+				Serial.println(configLength);
+
+				Serial.print("responseBuf: ");
+				for (int i = 0; i < 17; i++)
+				{
+    				if (responseBuf[i] < 0x10) Serial.print("0");
+    				Serial.print(responseBuf[i], HEX);
+    				Serial.print(" ");
+				}
+				Serial.println();
+
             if (nearbySession.shouldUpdateAccessory())
             {
                 UWBHAL.Log_I(" Following spec: 1.1");
@@ -264,13 +282,13 @@ Serial.println(data[0], HEX);
 
                 /* Need to send the exact data over ble */
 
-                txCharacteristic.writeValue(BLEmessage_iOS, nearbySession.configLen());
+                txCharacteristic.writeValue(responseBuff, sizeof(responseBuff));
             }
             else
             {
                 UWBHAL.Log_I(" Following spec 1.0");
                 /* Spec 1.0 support, clock drift not sent over BLE. BLE message size must  */
-                txCharacteristic.writeValue(BLEmessage_iOS, nearbySession.configLen());
+                txCharacteristic.writeValue(responseBuff, sizeof(responseBuff));
             }
         }
     }
